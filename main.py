@@ -246,12 +246,38 @@ class DeletePage(tk.Frame):
         # initialize the class as a tkinter Frame
         tk.Frame.__init__(self, parent, height=SCREEN_HEIGHT, width=SCREEN_WIDTH)
 
+        # functions
+        def submit_search():
+            cursor.execute("SELECT * FROM Friends WHERE id=%s", (e0.get(),))
+            text = ""
+            for friend in cursor:
+                text += "ID: " + str(friend[0]) + ", Name: " + friend[1] + " " + friend[2] + ", " + "Birthday: " + \
+                        friend[3] + ", " + "Likes: " + friend[4] + ", " + "Dislikes: " + friend[5] + \
+                        " Additional: " + friend[6] + "\n\n"
+            if len(text) == 0:
+                text += "There are no friends in the database with that name"
+            friends_label_text.set(text)
+
+        def delete_submit():
+            cursor.execute("DELETE FROM Friends WHERE id=%s", (e0.get(),))
+            db.commit()
+
         # starting page design
         label = ttk.Label(self, text="Delete a friend", font=FONT)
+        tk.Label(self, text="ID of friend to update", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.3)
+        ttk.Button(self, text="Search for ID", command=submit_search).place(anchor=tk.CENTER, relx=0.5, rely=0.4)
+        friends_label_text = tk.StringVar(value="")
+        tk.Label(self, textvariable=friends_label_text).place(anchor=tk.CENTER, relx=0.5, rely=0.5)
+
+        delete_button = ttk.Button(self, text="Delete", command=delete_submit)
         back_button = ttk.Button(self, text="Back", command=lambda: controller.show_frame(StartPage))
 
-        label.place(anchor=tk.CENTER, relx=0.5, rely=0.2)
-        back_button.place(anchor=tk.CENTER, relx=0.5, rely=0.8)
+        e0 = tk.Entry(self)
+
+        label.place(anchor=tk.CENTER, relx=0.5, rely=0.1)
+        e0.place(anchor=tk.CENTER, relx=0.7, rely=0.3)
+        delete_button.place(anchor=tk.CENTER, relx=0.3, rely=0.9)
+        back_button.place(anchor=tk.CENTER, relx=0.7, rely=0.9)
 
 
 screen = FriendsManager()
