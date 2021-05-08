@@ -17,6 +17,7 @@ cursor = db.cursor()
 
 # constants
 FONT = ("Verdana", 30)
+LABELFONT = ("Verdana", 20)
 SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 800
 
 
@@ -95,12 +96,12 @@ class CreatePage(tk.Frame):
         # starting page design
         label = ttk.Label(self, text="Create a friend", font=FONT)
 
-        tk.Label(self, text="First Name").place(anchor=tk.CENTER, relx=0.3, rely=0.2)
-        tk.Label(self, text="Last Name").place(anchor=tk.CENTER, relx=0.3, rely=0.3)
-        tk.Label(self, text="Birthday").place(anchor=tk.CENTER, relx=0.3, rely=0.4)
-        tk.Label(self, text="Likes").place(anchor=tk.CENTER, relx=0.3, rely=0.5)
-        tk.Label(self, text="Dislikes").place(anchor=tk.CENTER, relx=0.3, rely=0.6)
-        tk.Label(self, text="Additional").place(anchor=tk.CENTER, relx=0.3, rely=0.7)
+        tk.Label(self, text="First Name", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.2)
+        tk.Label(self, text="Last Name", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.3)
+        tk.Label(self, text="Birthday", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.4)
+        tk.Label(self, text="Likes", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.5)
+        tk.Label(self, text="Dislikes", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.6)
+        tk.Label(self, text="Additional", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.7)
 
         e1 = tk.Entry(self)
         e2 = tk.Entry(self)
@@ -143,8 +144,9 @@ class ReadPage(tk.Frame):
 
             text = ""
             for friend in cursor:
-                text += "Name: " + friend[0] + " " + friend[1] + ", " + "Birthday: " + friend[2] + ", " + \
-                        "Likes: " + friend[3] + ", " + "Dislikes: " + friend[4] + " Additional: " + friend[5] + "\n\n"
+                text += "ID: " + str(friend[0]) + ", Name: " + friend[1] + " " + friend[2] + ", " + "Birthday: " + \
+                        friend[3] + ", " + "Likes: " + friend[4] + ", " + "Dislikes: " + friend[5] + \
+                        " Additional: " + friend[6] + "\n\n"
             if len(text) == 0:
                 text += "There are no friends in the database with that name"
             friends_label_text.set(text)
@@ -152,10 +154,10 @@ class ReadPage(tk.Frame):
         # starting page design
         label = ttk.Label(self, text="View a friend", font=FONT)
 
-        tk.Label(self, text="First Name").place(anchor=tk.CENTER, relx=0.3, rely=0.2)
-        friends_label_text = tk.StringVar(value="placeholder")
+        tk.Label(self, text="First Name", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.2)
+        friends_label_text = tk.StringVar(value="")
         tk.Label(self, textvariable=friends_label_text).place(anchor=tk.CENTER, relx=0.5, rely=0.5)
-        tk.Label(self, text="Last Name").place(anchor=tk.CENTER, relx=0.3, rely=0.3)
+        tk.Label(self, text="Last Name", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.3)
 
         e1 = tk.Entry(self)
         e2 = tk.Entry(self)
@@ -177,12 +179,64 @@ class UpdatePage(tk.Frame):
         # initialize the class as a tkinter Frame
         tk.Frame.__init__(self, parent, height=SCREEN_HEIGHT, width=SCREEN_WIDTH)
 
+        # functions
+        def submit_search():
+            cursor.execute("SELECT * FROM Friends WHERE id=%s", (e0.get(),))
+            for friend in cursor:
+                e1.insert(0, friend[1])
+                e2.insert(0, friend[2])
+                e3.insert(0, friend[3])
+                e4.insert(0, friend[4])
+                e5.insert(0, friend[5])
+                e6.insert(0, friend[6])
+
+        def submit_update():
+            cursor.execute("UPDATE Friends SET first_name=%s, last_name=%s, birthday=%s, likes=%s, dislikes=%s, "
+                           "additional=%s WHERE id=%s",
+                           (e1.get(), e2.get(), e3.get(), e4.get(), e5.get(), e6.get(), e0.get()))
+            db.commit()
+            e0.delete(0, tk.END)
+            e1.delete(0, tk.END)
+            e2.delete(0, tk.END)
+            e3.delete(0, tk.END)
+            e4.delete(0, tk.END)
+            e5.delete(0, tk.END)
+            e6.delete(0, tk.END)
+
         # starting page design
         label = ttk.Label(self, text="Update a friend", font=FONT)
+
+        tk.Label(self, text="ID of friend to update", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.2)
+        search_button = ttk.Button(self, text="Search for ID", command=submit_search)
+        tk.Label(self, text="First Name", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.3)
+        tk.Label(self, text="Last Name", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.4)
+        tk.Label(self, text="Birthday", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.5)
+        tk.Label(self, text="Likes", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.6)
+        tk.Label(self, text="Dislikes", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.7)
+        tk.Label(self, text="Additional", font=LABELFONT).place(anchor=tk.CENTER, relx=0.3, rely=0.8)
+
+        e0 = tk.Entry(self)
+        e1 = tk.Entry(self)
+        e2 = tk.Entry(self)
+        e3 = tk.Entry(self)
+        e4 = tk.Entry(self)
+        e5 = tk.Entry(self)
+        e6 = tk.Entry(self)
+
+        submit_button = ttk.Button(self, text="Update", command=submit_update)
         back_button = ttk.Button(self, text="Back", command=lambda: controller.show_frame(StartPage))
 
-        label.place(anchor=tk.CENTER, relx=0.5, rely=0.2)
-        back_button.place(anchor=tk.CENTER, relx=0.5, rely=0.8)
+        label.place(anchor=tk.CENTER, relx=0.5, rely=0.1)
+        e0.place(anchor=tk.CENTER, relx=0.7, rely=0.2)
+        search_button.place(anchor=tk.CENTER, relx=0.85, rely=0.2)
+        e1.place(anchor=tk.CENTER, relx=0.7, rely=0.3)
+        e2.place(anchor=tk.CENTER, relx=0.7, rely=0.4)
+        e3.place(anchor=tk.CENTER, relx=0.7, rely=0.5)
+        e4.place(anchor=tk.CENTER, relx=0.7, rely=0.6)
+        e5.place(anchor=tk.CENTER, relx=0.7, rely=0.7)
+        e6.place(anchor=tk.CENTER, relx=0.7, rely=0.8)
+        submit_button.place(anchor=tk.CENTER, relx=0.3, rely=0.9)
+        back_button.place(anchor=tk.CENTER, relx=0.7, rely=0.9)
 
 
 # delete page

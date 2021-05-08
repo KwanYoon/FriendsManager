@@ -21,5 +21,5 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor()
 
-cursor.execute("CREATE TABLE Friends (first_name VARCHAR(15), last_name VARCHAR(15), birthday DATE, "
-               "likes VARCHAR(50), dislikes VARCHAR(50), additional VARCHAR(100))")
+cursor.execute("CREATE TABLE Friends (id INT PRIMARY KEY AUTO_INCREMENT, first_name VARCHAR(15), last_name VARCHAR(15), "
+               "birthday VARCHAR(20), likes VARCHAR(50), dislikes VARCHAR(50), additional VARCHAR(100))")
